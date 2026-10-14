@@ -20,7 +20,7 @@ starts from that same date. Use --dest to copy elsewhere.
 ### How to run script
 - move "find_meter_data.py" and track_date.csv to the Downloads folder on the computer that has the harvest data on it
 - find the Downloads folder with the script
-    - go to file explorer and click on the Downloads folder
+    - go to file explorer and click on This PC -> OS (C:) -> Users -> (not public) -> Downloads
     - click on the address bar and copy the path (e.g. C:\Users\[Username]\Downloads)
 - go to search bar at the bottom and type powershell and click on Windows Powershell
 - paste in the copied file address and hit enter:

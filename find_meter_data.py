@@ -1,4 +1,4 @@
-"""
+r"""
 
 Instructions on how to run (same as README.md):
 
@@ -14,9 +14,9 @@ Instructions on how to run (same as README.md):
 - then open file explorer and go to the Documents folder and you should see a NewData folder 
   with the copied files that you should then move the usb drive stick
 
-"""
+""" 
 
-""" (same as README.md)
+r""" (same as README.md)
 Find the MeterDataTest folder in the harvest computer's Documents folder.
 
 Usage:
@@ -45,7 +45,7 @@ TARGET = "MeterDataTest"
 NEW_DATA_DIR = "NewData"
 DEFAULT_TRACK_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "track_date.csv")
 
-"""Return the 'Users' directory for a drive root or network machine name."""
+r"""Return the 'Users' directory for a drive root or network machine name."""
 def find_users_dir(root):
     root = root.rstrip("\\/")
     candidates = []
@@ -62,7 +62,7 @@ def find_users_dir(root):
     return None
 
 
-"""Yield every Documents folder under the given Users dir (or a single profile)."""
+r"""Yield every Documents folder under the given Users dir (or a single profile)."""
 def documents_folders(users_dir):
     # If the path is itself a profile, treat it as the only user.
     if os.path.basename(users_dir).lower() != "users" and os.path.isdir(os.path.join(users_dir, "Documents")):
@@ -90,7 +90,7 @@ def documents_folders(users_dir):
             pass
 
 
-"""Yield paths named MeterDataTest within `depth` levels below `folder`."""
+r"""Yield paths named MeterDataTest within `depth` levels below `folder`."""
 def search(folder, depth):
     try:
         entries = list(os.scandir(folder))
@@ -108,7 +108,7 @@ def search(folder, depth):
             yield from search(e.path, depth - 1)
 
 
-"""Return the date stored in track_date.csv (first YYYY-MM-DD value after the header)."""
+r"""Return the date stored in track_date.csv (first YYYY-MM-DD value after the header)."""
 def read_track_date(path):
     try:
         with open(path, newline="", encoding="utf-8-sig") as f:
@@ -124,7 +124,7 @@ def read_track_date(path):
     sys.exit(f"No YYYY-MM-DD date found in {path}")
 
 
-"""Add a new top row (newest data date, today's pull date) under the header, keeping older rows."""
+r"""Add a new top row (newest data date, today's pull date) under the header, keeping older rows."""
 def write_track_date(path, date):
     try:
         with open(path, newline="", encoding="utf-8-sig") as f:
@@ -141,7 +141,7 @@ def write_track_date(path, date):
         sys.exit(f"Cannot write {path}: {e}")
 
 
-"""
+r"""
 Return CSV files in each subfolder of meter_dir whose filename date is >= since.
 
 Files are expected to be named YYYY-MM-DD_<meter>.csv.
@@ -169,7 +169,7 @@ def csv_files_since(meter_dir, since):
     return hits
 
 
-"""Copy files into dest_root, keeping each meter subfolder. Returns (copied, skipped, failed)."""
+r"""Copy files into dest_root, keeping each meter subfolder. Returns (copied, skipped, failed)."""
 def copy_files(files, meter_dir, dest_root):
     copied = skipped = failed = 0
     for src in files:
