@@ -30,8 +30,9 @@ Inside MeterDataTest it looks through each subfolder and copies the CSV files
 a NewData folder in the same Documents folder, keeping the meter subfolders.
 Files already in NewData that are unchanged (same size and modified time) are skipped;
 a file that has grown since the last run is copied again. After a run with no copy
-failures, track_date.csv is updated to the newest file date copied, and the next run
-starts from that same date. Use --dest to copy elsewhere.
+failures, a new row is added at the top of track_date.csv (under the header
+"Most Recent, Date Pulled") with the newest file date copied and today's date; older rows
+are kept. The next run starts from the top row's Most Recent date. Use --dest to copy elsewhere.
 """
 import argparse
 import csv
@@ -115,19 +116,27 @@ def read_track_date(path):
     except OSError as e:
         sys.exit(f"Cannot read {path}: {e}")
     for row in rows[1:]:
-        for cell in row:
+        if row:
             try:
-                return datetime.date.fromisoformat(cell.strip())
+                return datetime.date.fromisoformat(row[0].strip())
             except ValueError:
                 continue
     sys.exit(f"No YYYY-MM-DD date found in {path}")
 
 
-"""Rewrite track_date.csv with the given date, keeping the 'Most Recent' header."""
+"""Add a new top row (newest data date, today's pull date) under the header, keeping older rows."""
 def write_track_date(path, date):
     try:
+        with open(path, newline="", encoding="utf-8-sig") as f:
+            old = [r for r in csv.reader(f, skipinitialspace=True)][1:]
+    except OSError:
+        old = []
+    rows = [[date.isoformat(), datetime.date.today().isoformat()]] + [r for r in old if r]
+    try:
         with open(path, "w", newline="", encoding="utf-8") as f:
-            csv.writer(f).writerows([["Most Recent"], [date.isoformat()]])
+            f.write("Most Recent, Date Pulled\n")
+            for r in rows:
+                f.write(", ".join(c.strip() for c in r) + "\n")
     except OSError as e:
         sys.exit(f"Cannot write {path}: {e}")
 
@@ -237,12 +246,11 @@ def main():
         print(f"Some files failed to copy, so {args.track_file} was left at {since.isoformat()}.")
         sys.exit(1)
     if newest is None:
-        print(f"No files dated {since.isoformat()} or later; {args.track_file} unchanged.")
-    elif newest != since:
+        write_track_date(args.track_file, since)
+        print(f"No files dated {since.isoformat()} or later; refreshed pull date in {args.track_file}.")
+    else:
         write_track_date(args.track_file, newest)
         print(f"Updated {args.track_file}: {since.isoformat()} -> {newest.isoformat()}")
-    else:
-        print(f"Newest file is still {newest.isoformat()}; {args.track_file} unchanged.")
 
 
 if __name__ == "__main__":
